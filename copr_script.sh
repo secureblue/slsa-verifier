@@ -14,7 +14,7 @@
 
 set -oue pipefail
 
-cd crane
+cd slsa-verifier
 VERSION=$(grep -E '^Version:' slsa-verifier.spec | awk '{print $2}')
 mkdir -p generate_vendor
 cp go-vendor-tools.toml generate_vendor
