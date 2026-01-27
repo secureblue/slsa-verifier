@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+name: Linters
+
+on:
+  push:
+    branches: ["live"]
+  pull_request:
+    branches: ["**"]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rpmlint:
+    name: Lint RPM spec
+    runs-on: ubuntu-24.04
+    container: fedora:43
+    steps:
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo dnf install -y rpmlint
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Run rpmlint
+        shell: bash
+        run: |
+          find . -type f -name '*.spec' -execdir rpmlint '{}' +
+
+  shellcheck:
+    name: Run ShellCheck on shell scripts
+    runs-on: ubuntu-slim
+    steps:
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install shellcheck
+
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check REUSE compliance
+        shell: bash
+        run: |
+          find . -type f -name '*.sh' -execdir shellcheck '{}' +
