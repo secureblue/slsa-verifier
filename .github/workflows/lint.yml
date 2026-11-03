@@ -20,7 +20,7 @@ jobs:
   rpmlint:
     name: Lint RPM spec
     runs-on: ubuntu-26.04
-    container: fedora:43
+    container: fedora:46@sha256:78bb31de333664aa76c4bf54306791cd294c0bd4fbcfc4346e2286261de544c4
     steps:
       - name: Install dependencies
         shell: bash
