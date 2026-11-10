@@ -9,17 +9,18 @@
 
 set -eux
 
-VERSION=$(awk '/^Version:[[:blank:]]/ { print $2; exit }' slsa-verifier/slsa-verifier.spec)
+build_dir=$(pwd)
+version=$(awk '$1 == "Version:" { print $2; exit }' slsa-verifier/slsa-verifier.spec)
 (
     cd slsa-verifier
-    cp go-vendor-tools.toml ..
-    rpmautospec process-distgit ./slsa-verifier.spec ../slsa-verifier.spec
+    cp go-vendor-tools.toml "${build_dir}"
+    rpmautospec process-distgit slsa-verifier.spec "${build_dir}/slsa-verifier.spec"
 )
 mkdir -p generate_vendor
 cp go-vendor-tools.toml generate_vendor
 (
     cd generate_vendor
-    go2rpm --name slsa-verifier --profile vendor --version "${VERSION}" -s cli/slsa-verifier https://github.com/slsa-framework/slsa-verifier
-    mv "slsa-verifier-${VERSION}.tar.gz" "slsa-verifier-${VERSION}-vendor.tar.bz2" ..
+    go2rpm --name slsa-verifier --profile vendor --version "${version}" https://github.com/slsa-framework/verifier
+    mv "verifier-${version}.tar.gz" "verifier-${version}-vendor.tar.bz2" "${build_dir}"
 )
 rm -rf slsa-verifier generate_vendor
