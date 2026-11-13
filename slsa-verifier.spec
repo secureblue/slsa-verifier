@@ -43,10 +43,17 @@ tar -xf %{S:1}
 export GO_LDFLAGS="-X github.com/slsa-framework/verifier/internal/cmd.version=v%{version}"
 %gobuild -o %{gobuilddir}/bin/slsa-verifier %{goipath}
 
+mkdir -p completions/bash completions/fish
+%{gobuilddir}/bin/slsa-verifier completion bash >completions/bash/slsa-verifier
+%{gobuilddir}/bin/slsa-verifier completion fish >completions/fish/slsa-verifier.fish
+
 %install
 %go_vendor_license_install -c %{S:2}
 install -m 0755 -vd                     %{buildroot}%{_bindir}
 install -m 0755 -vp %{gobuilddir}/bin/* %{buildroot}%{_bindir}/
+
+install -Dp -m 0644 -t %{buildroot}%{_datadir}/bash-completion/completions completions/bash/*
+install -Dp -m 0644 -t %{buildroot}%{_datadir}/fish/vendor_completions.d completions/fish/*.fish
 
 %check
 %go_vendor_license_check -c %{S:2}
@@ -58,7 +65,8 @@ install -m 0755 -vp %{gobuilddir}/bin/* %{buildroot}%{_bindir}/
 %doc docs README.md SECURITY.md pkg/slsa/builders/registry/README.md
 %doc pkg/slsa/controls/catalog/README.md pkg/slsa/verifiers/registry/README.md
 %{_bindir}/slsa-verifier
-
+%{_datadir}/bash-completion/completions/slsa-verifier
+%{_datadir}/fish/vendor_completions.d/slsa-verifier.fish
 
 %changelog
 %autochangelog
