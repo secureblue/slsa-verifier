@@ -5,7 +5,7 @@
 %global goipath         github.com/slsa-framework/verifier
 Epoch:                  1
 # renovate: datasource=github-releases depName=slsa-framework/verifier extractVersion=^v(?<version>.*)$
-Version:                0.1.1
+Version:                0.1.2
 
 %gometa -L -f
 
